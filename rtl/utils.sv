@@ -9,7 +9,7 @@ module gray_to_bin #(parameter WIDTH = 8)(
 
 endmodule
 
-module bin_to_gray #(parameter WIDTH = 8;)(
+module bin_to_gray #(parameter WIDTH = 8)(
     input  logic [WIDTH-1:0] bin_code,
     output logic [WIDTH-1:0] gray_code
 );
