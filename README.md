@@ -20,3 +20,5 @@ I shall be posting you all on the dev log (it's gonna be a short one tho (hopefu
 
 
 ## ALR GNG! Update time! 
+
+I finna finished up the thingy. now i gotta write testbenches. and run testbenches to find all the bugs in the main module, and in the testbench itself. oopsies. anyway. ggs
