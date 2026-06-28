@@ -17,3 +17,6 @@ Yap:
 - TADA!! (we're actually done!)
 
 I shall be posting you all on the dev log (it's gonna be a short one tho (hopefully)). Anyway, till my next commit! 
+
+
+## ALR GNG! Update time! 
