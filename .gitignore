@@ -1,2 +1,15 @@
 Notes.md
 a.out
+/bin
+/sim
+/.vscode
+/db
+/incremental_db
+/output_files
+/simulation
+FIFO-roll.qpf
+fifo.qsf
+fifo_nativelink_simulation.rpt
+c5_pin_model_dump.txt
+*.bak
+/testfiles
