@@ -1,3 +1,5 @@
+`timescale 1ns/1ps
+
 module write_logic #(parameter W_WIDTH = 8, parameter R_WORDS=4, parameter G_SIZE = 7)(
     input rst_n,
 
@@ -37,11 +39,8 @@ module write_logic #(parameter W_WIDTH = 8, parameter R_WORDS=4, parameter G_SIZ
     logic is_full_now;
     logic is_full_next;
     
-    assign is_full_now = (w_addr_w_ptr[G_SIZE-2:0] == r_addr[G_SIZE-2:0]) && (w_addr_w_ptr[G_SIZE-1] != r_addr[G_SIZE-1]);
-    assign is_full_next = (w_addr_next[G_SIZE-2:0] == r_addr[G_SIZE-2:0]) && (w_addr_next[G_SIZE-1] != r_addr[G_SIZE-1]);
-
-    logic [W_WIDTH*R_WORDS+R_WORDS:0] w_dat_expanded;
-    assign w_dat_expanded = {{(W_WIDTH*(R_WORDS-1)+R_WORDS+1){1'b0}}, w_data};
+    assign is_full_now = (w_addr_w_ptr[G_SIZE-2:0]+1 == r_addr[G_SIZE-2:0]) && (w_addr_w_ptr[G_SIZE-1] != r_addr[G_SIZE-1]);
+    assign is_full_next = (w_addr_next[G_SIZE-2:0]+1 == r_addr[G_SIZE-2:0]) && (w_addr_next[G_SIZE-1] != r_addr[G_SIZE-1]);
 
     always_ff@(posedge w_clk) begin
         if(!rst_n) begin
@@ -59,15 +58,18 @@ module write_logic #(parameter W_WIDTH = 8, parameter R_WORDS=4, parameter G_SIZ
                     write <= 1;
                     w_addr_w_ptr <= w_addr_buf;
                     w_addr_buf <= w_addr_buf+1;
+                    buffer_ptr <= '0;
                 end else begin
                     write <= 0;
                     w_addr_w_ptr <= w_addr_w_ptr;
                     w_addr_buf <= w_addr_buf;
+                    buffer_ptr <= buffer_ptr+1;
                 end
-                write_buffer <= w_dat_expanded<<(W_WIDTH*buffer_ptr) | write_buffer;
-                write_buffer <= write_buffer | 1<<(W_WIDTH*R_WORDS+{{(W_WIDTH*R_WORDS-buffer_ptr_len){1'b0}}, buffer_ptr});
-                write_buffer[W_WIDTH*R_WORDS] <= w_last;
-                buffer_ptr <= buffer_ptr+1;
+                // write_buffer <= w_dat_shifted | write_buffer;
+                // write_buffer <= w_buffer_next;
+                write_buffer[W_WIDTH*(R_WORDS-int'(buffer_ptr)-1) +: W_WIDTH] <= w_data;
+                write_buffer[W_WIDTH*R_WORDS +: R_WORDS] <= ((1<<R_WORDS)-1) - ((1<<(R_WORDS-buffer_ptr-1))-1);
+                write_buffer[W_WIDTH*R_WORDS+R_WORDS] <= w_last;
             end else begin
                 write <= 0;
                 w_ready <= !(is_full_now);

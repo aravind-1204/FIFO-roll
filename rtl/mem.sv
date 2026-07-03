@@ -1,3 +1,5 @@
+`timescale 1ns/1ps
+
 module mem #(parameter R_WIDTH = 32, parameter R_WORDS = 4, parameter ADDR_SIZE = 6)(
     input w_clk,
     input [ADDR_SIZE-1:0] w_addr,

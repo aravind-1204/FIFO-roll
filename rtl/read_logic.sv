@@ -1,3 +1,5 @@
+`timescale 1ns/1ps
+
 module read_logic #(parameter W_WIDTH=8, parameter R_WORDS=4, parameter G_SIZE=7)(
     input rst_n,
 
@@ -18,9 +20,10 @@ module read_logic #(parameter W_WIDTH=8, parameter R_WORDS=4, parameter G_SIZE=7
     // logic [G_SIZE-1:0] r_addr;
     logic [G_SIZE-1:0] w_addr_w_ptr;
     logic [G_SIZE-1:0] r_addr_w_ptr;
-    logic [G_SIZE-1:0] r_addr_next;
+    // logic [G_SIZE-1:0] r_addr_next;
 
-    assign r_addr_next = r_addr_w_ptr+1;
+    // assign r_addr_next = r_addr_w_ptr+1;
+    assign r_addr = r_addr_w_ptr[G_SIZE-2:0];
 
     bin_to_gray #(.WIDTH(G_SIZE)) b2g_read(r_clk, rst_n, r_addr_w_ptr, r_addr_gray);
 
@@ -36,41 +39,48 @@ module read_logic #(parameter W_WIDTH=8, parameter R_WORDS=4, parameter G_SIZE=7
     logic is_skid_occ;
 
     logic is_empty_now;
-    logic is_empty_next;
+    // logic is_empty_next;
 
     logic read_tag_buffer;
 
     assign is_empty_now = (r_addr_w_ptr == w_addr_w_ptr);
-    assign is_empty_next = (r_addr_next == w_addr_w_ptr);
+    // assign is_empty_next = (r_addr_next == w_addr_w_ptr);
 
     // assign read = !is_empty_now && is_skid_occ && (!r_valid || r_ready);
+    // logic start_read_next;
+    // assign start_read_next = !(is_empty_now) && (!r_valid || r_ready);
+    // logic stop_read_next;
+    // assign stop_read_next = is_empty_next || !r_ready;
+
+    assign read = !(is_empty_now) && (r_ready || !r_valid);
 
     always_ff@(posedge r_clk) begin
         if(!rst_n) begin
-            read <= 0;
+            // read <= 0;
             is_skid_occ <= 0;
             read_tag_buffer <= 0;
-            r_addr <= 0;
+            r_addr_w_ptr <= 0;
             r_valid <= 0;
         end else begin
             read_tag_buffer <= read;
             if(!read) begin
-                read <= !is_empty_now && (!r_valid || r_ready);
+                // read <= start_read_next;
                 if(read_tag_buffer) begin
-                    is_skid_occ <= 0;
+                    is_skid_occ <= 1;
                     skid_buffer <= r_from_mem;
+                    r_valid <= (!r_ready)&&(r_valid);
                 end else begin
-                    r_valid <= !r_ready;
+                    r_valid <= (!r_ready)&&(r_valid);
                 end
             end else begin
-                read <= !is_empty_next || !r_ready;
+                // read <= !(stop_read_next);
                 r_addr_w_ptr <= r_addr_w_ptr+1;
                 if(is_skid_occ) begin
                     is_skid_occ <= 0;
                     read_buffer <= skid_buffer;
                     r_valid <= 1;
                 end else begin
-                    r_valid <= read_tag_buffer || !r_ready;
+                    r_valid <= read_tag_buffer&&read;
                     read_buffer <= r_from_mem;
                 end
             end

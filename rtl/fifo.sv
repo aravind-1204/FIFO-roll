@@ -1,18 +1,20 @@
+`timescale 1ns/1ps
+
 module fifo #(parameter W_WIDTH = 8, parameter MEM_WORDS = 64, parameter R_WORDS = 4) (
-    input rst_n,
+    input logic rst_n,
 
-    input w_clk,
-    input [W_WIDTH-1:0] w_data,
-    input w_valid,
-    input w_last,
-    output w_ready,
+    input logic w_clk,
+    input logic [W_WIDTH-1:0] w_data,
+    input logic w_valid,
+    input logic w_last,
+    output logic w_ready,
 
-    input r_clk,
-    output [R_WORDS*W_WIDTH-1:0] r_data,
-    input r_ready,
-    output [R_WORDS-1:0] r_keep,
-    output r_valid,
-    output r_last
+    input logic r_clk,
+    output logic [R_WORDS*W_WIDTH-1:0] r_data,
+    input logic r_ready,
+    output logic [R_WORDS-1:0] r_keep,
+    output logic r_valid,
+    output logic r_last
 );
 
     parameter G_SIZE = 1 + $clog2(MEM_WORDS);

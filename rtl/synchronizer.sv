@@ -1,3 +1,5 @@
+`timescale 1ns/1ps
+
 module synchronizer #(parameter WIDTH = 8)(
     input logic [WIDTH-1:0] in,
     input reset_n,
@@ -5,7 +7,8 @@ module synchronizer #(parameter WIDTH = 8)(
 
     output logic [WIDTH-1:0] out
 );
-
+	 /* Comment the line below when compiling with any other tools.*/
+	 (* altera_attribute = "-name SYNCHRONIZER_IDENTIFICATION FORCED_IF_ASYNCHRONOUS" *)
     logic [WIDTH-1:0] reg1;
 
     always_ff @(posedge new_clk) begin

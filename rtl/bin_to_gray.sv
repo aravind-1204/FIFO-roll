@@ -1,3 +1,5 @@
+`timescale 1ns/1ps
+
 module bin_to_gray #(parameter WIDTH = 8)(
     input clk,
     input reset_n,
