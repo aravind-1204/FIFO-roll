@@ -24,13 +24,19 @@ module slave#(parameter W_WIDTH=8, parameter R_WORDS=4)(
             fd = $fopen(filename, "w");
             if(fd==0) begin
                 $error("[S] Couldn't open file.\n");
+				$stop;
                 disable task_blk;
             end
             if(!rst_n) begin
                 r_ready = 0;
+                temp_data = '0;
                 @(posedge r_clk);
             end else begin
+                r_ready = 0;
+                repeat(30) @(negedge r_clk);
                 while(!r_done) begin
+                    temp_data = '0;
+                    $display("ballsack\n");
                     choice = $urandom_range(9);
                     if(choice<8) begin
                         r_ready = 1;
@@ -44,6 +50,7 @@ module slave#(parameter W_WIDTH=8, parameter R_WORDS=4)(
                             end
                         end
                         $fwrite(fd, "%h", temp_data);
+                        $display("%h", temp_data);
                         if(r_last)
                             $fwrite(fd, "\n");
                     end else begin
@@ -51,11 +58,13 @@ module slave#(parameter W_WIDTH=8, parameter R_WORDS=4)(
                         @(posedge r_clk);
                     end
                 end
+                $display("odfjgnozdfjbngdfojgbnosjfgbnodsfjgnofdsgb");
                 $fclose(fd);
                 r_ready = 0;
                 repeat(25) @(posedge r_clk);
+                $stop;
             end
         end
-        $finish;
+		$stop;
     endtask
 endmodule

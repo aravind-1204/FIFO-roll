@@ -24,18 +24,22 @@ module master #(parameter W_WIDTH=8)(
             fd=$fopen(filename, "r");
             if(fd==0) begin
                 $error("[M] Couldn't open file.\n");
+				$stop;
                 disable task_blk;
             end
             if(!rst_n) begin
                 w_valid = 0;
                 w_last = 0;
                 w_done = 0;
-                @(posedge w_clk);
+                w_data = 0;
+                @(negedge w_clk);
             end else begin 
                 while(!$feof(fd)) begin
                     w_valid = 0;
                     w_done = 0;
-                    repeat($urandom_range(5,20)) @(posedge w_clk);
+                    w_last = 0;
+                    w_data = 0;
+                    repeat($urandom_range(5,20)) @(negedge w_clk);
                     status = $fscanf(fd, "%d ", pkt_len);
 
                     if(status==1) begin
@@ -53,19 +57,21 @@ module master #(parameter W_WIDTH=8)(
                             w_last = (i==pkt_len);
 
                             do begin
-                                @(posedge w_clk);
+                                @(negedge w_clk);
                             end while(!w_ready);
                         end else begin
+                            w_last = 0;
                             w_valid = 0;
-                            @(posedge w_clk);
+                            @(negedge w_clk);
                         end
                     end
                 end
                 $fclose(fd);
                 w_valid = 0;
                 w_last = 0;
+                repeat(30) @(negedge w_clk);
                 w_done = 1;
-                repeat(25) @(posedge w_clk);
+                $stop;
             end
         end
     endtask
