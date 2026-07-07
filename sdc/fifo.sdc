@@ -1,33 +1,41 @@
-#Set up clocks
-create_clock -name w_clk -period 5 [get_ports w_clk]
-create_clock -name r_clk -period 20 [get_ports r_clk]
+set W_CLK_PERIOD 10.0
+set W_MAX_DELAY [expr $W_CLK_PERIOD / 2.0]
 
-set_max_delay -from [get_clocks w_clk] -to [get_clocks r_clk] 10.000
-set_max_delay -from [get_clocks r_clk] -to [get_clocks w_clk] 10.000
+set R_CLK_PERIOD 10.0
+set R_MAX_DELAY [expr $R_CLK_PERIOD / 2.0]
+
+set MAX_DELAY [expr min($W_CLK_PERIOD, $R_CLK_PERIOD)]
+
+#Set up clocks
+create_clock -name w_clk -period $W_CLK_PERIOD [get_ports w_clk]
+create_clock -name r_clk -period $R_CLK_PERIOD [get_ports r_clk]
+
+set_max_delay -from [get_clocks w_clk] -to [get_clocks r_clk] $MAX_DELAY
+set_max_delay -from [get_clocks r_clk] -to [get_clocks w_clk] $MAX_DELAY
 
 set_false_path -hold -from [get_clocks w_clk] -to [get_clocks r_clk]
 set_false_path -hold -from [get_clocks r_clk] -to [get_clocks w_clk]
 
 #Constraint Paths:
-create_clock -name virt_w_clk -period 5
-create_clock -name virt_r_clk -period 20
+#create_clock -name virt_w_clk -period $W_CLK_PERIOD
+#create_clock -name virt_r_clk -period $R_CLK_PERIOD
 #	Writer:
 
-set_input_delay -clock virt_w_clk -max 2.500 [get_ports {w_data[*] w_valid w_last}]
-set_input_delay -clock virt_w_clk -min 0.100 [get_ports {w_data[*] w_valid w_last}]
-
-set_output_delay -clock virt_w_clk -max 2.500 [get_ports {w_ready}]
-set_output_delay -clock virt_w_clk -min 0.100 [get_ports {w_ready}]
+#set_input_delay -clock virt_w_clk -max $W_MAX_DELAY [get_ports {w_data[*] w_valid w_last}]
+#set_input_delay -clock virt_w_clk -min 0.100 [get_ports {w_data[*] w_valid w_last}]
+#
+#set_output_delay -clock virt_w_clk -max $W_MAX_DELAY [get_ports {w_ready}]
+#set_output_delay -clock virt_w_clk -min 0.100 [get_ports {w_ready}]
 
 #	Reader:
 
-set_input_delay -clock virt_r_clk -max 10.00 [get_ports {r_ready}]
-set_input_delay -clock virt_r_clk -min 0.100 [get_ports {r_ready}]
+#set_input_delay -clock virt_r_clk -max $R_MAX_DELAY [get_ports {r_ready}]
+#set_input_delay -clock virt_r_clk -min 0.100 [get_ports {r_ready}]
+#
+#set_output_delay -clock virt_r_clk -max $R_MAX_DELAY [get_ports {r_data[*] r_keep[*] r_valid r_last}]
+#set_output_delay -clock virt_r_clk -min 0.100 [get_ports {r_data[*] r_keep[*] r_valid r_last}]
 
-set_output_delay -clock virt_r_clk -max 10.00 [get_ports {r_data[*] r_keep[*] r_valid r_last}]
-set_output_delay -clock virt_r_clk -min 0.100 [get_ports {r_data[*] r_keep[*] r_valid r_last}]
-
-set_clock_groups -asynchronous -group {w_clk virt_w_clk} -group {r_clk virt_r_clk}
+set_clock_groups -asynchronous -group {w_clk} -group {r_clk}
 
 #Ignore rst_n
 
