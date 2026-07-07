@@ -1,11 +1,11 @@
-## Asymmetric Asyc FIFO:
+# Asymmetric Asyc FIFO:
 
 This is a self taught attempt at making an Asynchronous FIFO. Decided to also make it asymmetric, because why not?
 
 ## Specifications:
 This module was synthesized using Intel Quartus Lite for Cyclone V FPGA. Following are the specifications:
 
-# Resource Utilization:
+### Resource Utilization:
 | Resource / Metric | Utilization / Value |
 | :--- | :--- |
 | **Top-level Entity Name** | fifo |
@@ -26,7 +26,7 @@ This module was synthesized using Intel Quartus Lite for Cyclone V FPGA. Followi
 | **Total PLLs** | 0 / 6 ( 0 % ) |
 | **Total DLLs** | 0 / 4 ( 0 % ) |
 
-# Timing analysis:
+### Timing analysis:
 | Slow 1100mV 85°C Model | | | | Slow 1100mV 0°C Model | | |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 | **Clock Name** | **F_max** | **Restricted F_max** | | **Clock Name** | **F_max** | **Restricted F_max** |
@@ -40,10 +40,10 @@ I initally started off with the first method. Switched to Quartus to synthesize 
 
 ## Disclosure of AI Usage:
 
-# What AI didn't do:
+### What AI didn't do:
 * **Did not write the code.**
 * **Did not make any architectural decisions.**
 
-## What AI Did Do
+### What AI Did Do
 * **Gave me resources** I can refer to.
 * **Acted like my rubber ducky** for debugging and brainstorming.
